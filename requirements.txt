@@ -9,5 +9,5 @@ scikit-learn
 streamlit-cropper
 tensorflow
 seaborn
-opencv-python==4.10.0.84
-libgl1-mesa-glx
+opencv-python-headless
+
