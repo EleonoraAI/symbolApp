@@ -1,0 +1,12 @@
+opencv-python
+numpy
+streamlit
+Pillow
+matplotlib
+scikit-image
+pandas
+scikit-learn
+streamlit-cropper
+tensorflow
+seaborn
+cv2
