@@ -1,5 +1,7 @@
-*.npy
+# *.npy
 *.h5
+history.npy
+/aimodel/*
 
 /dataset_old/*
 /dataset_old1/*
@@ -10,3 +12,4 @@ dockerfile
 # *.png
 # *.jpg
 *.pyc
+X_test.npy
