@@ -1,5 +1,5 @@
 # *.npy
-*.h5
+# *.h5
 # history.npy
 /aimodel/*
 
