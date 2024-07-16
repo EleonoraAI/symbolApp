@@ -3,7 +3,7 @@
 
 /dataset_old/*
 /dataset_old1/*
-/extracted/*
+# /extracted/*
 
 *.ipynb
 dockerfile
