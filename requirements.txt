@@ -9,4 +9,4 @@ scikit-learn
 streamlit-cropper
 tensorflow
 seaborn
-cv2
+opencv-python==4.10.0.84
