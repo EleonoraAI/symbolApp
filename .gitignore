@@ -8,5 +8,5 @@
 *.ipynb
 dockerfile
 # *.png
-*.jpg
+# *.jpg
 *.pyc
