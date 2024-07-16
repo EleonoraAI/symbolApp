@@ -1,6 +1,6 @@
 # *.npy
 *.h5
-history.npy
+# history.npy
 /aimodel/*
 
 /dataset_old/*
