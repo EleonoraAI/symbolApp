@@ -27,7 +27,7 @@ col1, col2, col3 = st.columns([1, 3, 1])
 with col1:
     st.write("")
 with col2:
-    st.markdown(f"<img src='{icon}' style='width: 80px; display: block; margin-left: auto; margin-right: auto;'><h1 style='text-align: center; color: black;'>Symbol Detection Platform</h1>", unsafe_allow_html=True)
+    st.markdown(f"<img src='{icon}' style='width: 80px; display: block; margin-left: auto; margin-right: auto;'><h1 style='text-align: center;'>Symbol Detection Platform</h1>", unsafe_allow_html=True)
     
     st.markdown(f"""<div style="text-align: justify">
         This application has been developed by the research team from the <a href="https://www.uniba.it/it/ricerca/dipartimenti/informatica" target='_blank'>Department of Computer Science at Aldo Moro University of Bari</a>.
