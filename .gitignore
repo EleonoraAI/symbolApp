@@ -1,6 +1,6 @@
 *.npy
 *.h5
-/dataset/*
+
 /dataset_old/*
 /dataset_old1/*
 /extracted/*
