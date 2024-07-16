@@ -9,7 +9,5 @@
 
 *.ipynb
 dockerfile
-# *.png
-# *.jpg
 *.pyc
 # X_test.npy
