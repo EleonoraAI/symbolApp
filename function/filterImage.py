@@ -93,6 +93,6 @@ def main(img):
             # Save filtered image after user has selected the filter
             cv2.imwrite("processing_dataset/uploadedFiltered.jpg", filtered_img)
             # Success saving image
-            st.success("Image saved to disk")
+            st.success("Filter applied successfully")
 
     return filtered_img

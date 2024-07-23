@@ -211,8 +211,9 @@ def create_dataset(symbols_folder, num_clusters, clustering_algorithm, binarizat
 def main():
     st.title('Symbol Clustering App')
 
-    # Widget for selecting the symbols folder
+    # Widget for selecting the symbols folder only with dataset in name of directory
     symbols_folder = st.sidebar.selectbox('Select symbols folder', os.listdir('.'), index=8)
+
 
     # Widget for enabling PCA
     is_pca = st.sidebar.checkbox("Dimensionality reduction using PCA")
