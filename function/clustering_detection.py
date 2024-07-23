@@ -212,7 +212,8 @@ def main():
     st.title('Symbol Clustering App')
 
     # Widget for selecting the symbols folder only with dataset in name of directory
-    symbols_folder = st.sidebar.selectbox('Select symbols folder', os.listdir('.'), index=8)
+    # symbols_folder = st.sidebar.selectbox('Select symbols folder', os.listdir('.'), index=8)
+    symbols_folder = "symbols"
 
 
     # Widget for enabling PCA
