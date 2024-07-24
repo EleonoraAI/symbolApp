@@ -1,3 +1,4 @@
+import os
 import cv2
 import streamlit as st
 
@@ -35,7 +36,9 @@ def main(img):
     if selected_filter == "Original":
         filtered_img = img
         with col2:
-            st.image(filtered_img, channels="BGR", width=500)
+            st.image(filtered_img, channels="BGR", width=400)
+        with col1:
+            st.markdown("**Original**: The original image without any filtering.")
     
     else:
         # Additional filters
@@ -61,7 +64,6 @@ def main(img):
             elif selected_filter == "Median":
                 kernel_size = st.slider("Kernel Size", min_value=1, max_value=21, step=2, value=5)
 
-
         with col2:
             # Converti l'immagine in Scala di Grigi se ha più di 3 canali
             if len(img.shape) > 2 and img.shape[2] > 3:
@@ -72,18 +74,36 @@ def main(img):
                 if len(img.shape) > 2:  # Controlla se l'immagine è a colori
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Converti in scala di grigi
                 filtered_img = apply_image_filter(img, selected_filter, clip_limit=clip_limit, tile_grid_size=tile_grid_size)
+                with col1:
+                    st.markdown("**CLAHE**: Contrast Limited Adaptive Histogram Equalization enhances the contrast of the image, making symbols more distinguishable. This helps the neural network to detect features more effectively in low contrast images.")
             elif selected_filter == "Histogram Equalization":
                 if len(img.shape) > 2:  # Controlla se l'immagine è a colori
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Converti in scala di grigi
                 filtered_img = apply_image_filter(img, selected_filter)
+                with col1:
+                    st.markdown("**Histogram Equalization**: This method equalizes the histogram of the image to improve contrast. It helps in highlighting the features of symbols by distributing intensities evenly.")
             elif selected_filter == "Canny":
                 if len(img.shape) > 2:  # Controlla se l'immagine è a colori
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Converti in scala di grigi
-                filtered_img = apply_image_filter(img, selected_filter)
+                filtered_img = apply_image_filter(img, selected_filter, low_threshold=low_threshold, high_threshold=high_threshold)
+                with col1:
+                    st.markdown("**Canny**: Canny Edge Detection highlights the edges of objects in the image. This helps the neural network to recognize the shapes and outlines of symbols more accurately.")
             elif selected_filter == "Unsharp Masking":
                 filtered_img = apply_image_filter(img, selected_filter, alpha=alpha, beta=beta, sigma=sigma)
-            else:
-                filtered_img = img
+                with col1:
+                    st.markdown("**Unsharp Masking**: This filter sharpens the image by enhancing edges and fine details. It can make the symbols more pronounced, aiding the neural network in recognizing finer features.")
+            elif selected_filter == "Gaussian":
+                filtered_img = apply_image_filter(img, selected_filter, kernel_size=kernel_size)
+                with col1:
+                    st.markdown("**Gaussian**: Gaussian Blur reduces noise and detail in the image. This can help the neural network focus on larger, more significant features of the symbols by smoothing out irrelevant details.")
+            elif selected_filter == "Bilateral":
+                filtered_img = apply_image_filter(img, selected_filter, diameter=diameter, sigma_color=sigma_color, sigma_space=sigma_space)
+                with col1:
+                    st.markdown("**Bilateral**: Bilateral Filtering smooths the image while preserving edges. This reduces noise and makes edges clearer, which is useful for symbol recognition by maintaining important details.")
+            elif selected_filter == "Median":
+                filtered_img = apply_image_filter(img, selected_filter, kernel_size=kernel_size)
+                with col1:
+                    st.markdown("**Median**: Median Filtering removes salt-and-pepper noise while preserving edges. This helps the neural network by reducing noise and keeping important edge information intact.")
 
             # Visualizza l'immagine con Streamlit
             st.image(filtered_img, channels="GRAY" if len(filtered_img.shape) < 3 else "BGR", width=500)
