@@ -85,8 +85,30 @@ def display_evaluation_results(model, X_test, y_test):
         plt.title('Confusion Matrix')
         st.pyplot(plt)
 
+    
+
 def main():
     st.title("Model Evaluation Dashboard")
+
+    st.markdown("""
+
+    ### Model Performance Metrics
+    - **Accuracy**: The proportion of true results (both true positives and true negatives) among the total number of cases examined. 
+    - **Loss**: A measure of how well (or poorly) the model is performing. It quantifies the difference between the predicted values and the actual values.
+
+    ### Visualization of Results
+    - The plots show the accuracy and loss over epochs for both training and validation data, which helps in understanding the model's learning process over time.
+
+    ### Confusion Matrix
+    - A **confusion matrix** is a table used to describe the performance of a classification model on a set of test data for which the true values are known. It helps in understanding the types of errors the model is making.
+    
+    - **True Positives (TP)**: The model correctly predicted the positive class.
+    - **True Negatives (TN)**: The model correctly predicted the negative class.
+    - **False Positives (FP)**: The model incorrectly predicted the positive class (Type I error).
+    - **False Negatives (FN)**: The model incorrectly predicted the negative class (Type II error).
+    
+    The confusion matrix gives a detailed breakdown of how well your model is performing on each class, which is crucial for understanding the strengths and weaknesses of the model.
+    """)
 
     history = load_history('history.npy')
     if history:
