@@ -1,0 +1,3 @@
+Contour Detection: aggiungere un pulsante riconoscere simboli
+
+Creare credenziali per consentire il salvataggio di immagini 
