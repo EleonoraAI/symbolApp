@@ -5,8 +5,21 @@ from PIL import Image
 st.set_option('deprecation.showfileUploaderEncoding', False)
 
 def main():
-    st.header("Cropper")
-    col1, col2,col3 = st.columns([1, 3, 3])
+    st.header("Area Extraction")
+    st.markdown("""
+    This phase allows for the selection of specific parts of an image that contain the symbols of interest, with two main objectives:
+
+    #### Neural network training:
+
+    **Purpose**: Create a training dataset (set of data for training) using specific areas with symbols.  
+    **Description**: During the training of a neural network, it is essential to have a carefully labeled dataset. By manually selecting areas that contain relevant symbols, we can create a dataset that the neural network will use to learn to recognize these symbols. This process ensures that the neural network is exposed to clear and relevant examples, improving its ability to correctly identify symbols in future images.
+
+    #### Testing and recognition:
+
+    **Purpose**: Verify the accuracy of the classifier (trained neural network) by recognizing symbols in specific areas.  
+    **Description**: Once trained, the neural network is tested on new images to evaluate its performance. By selecting areas where symbols are to be recognized, we can check if the classifier can correctly identify the symbols and assign the corresponding label. This step is essential to understand if the neural network is ready to be used in real-world applications or if it requires further improvements.
+    """)
+    col1, col2, col3 = st.columns([1, 3, 1])
     with col1:
         # Set options for demo purposes
         realtime_update = st.checkbox(label="Update in Real Time", value=True)
@@ -33,8 +46,8 @@ def main():
     with col3:
         # Manipulate cropped image at will
         st.write("Preview")
-        _ = cropped_img.thumbnail((1200, 1200))
-        st.image(cropped_img)
+        _ = cropped_img.thumbnail((150, 150))
+        st.image(cropped_img, width=250)
 
     with col1:  
         # save cropped_img
