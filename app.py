@@ -49,7 +49,7 @@ PAGES = {
     "Dataset settings": dataset.main,
     "Training": training_ai.main,
     "Results": results_ai.main,
-    "Test": predict_ai.main,
+    "Analysis": predict_ai.main,
 }
 
 st.sidebar.title('Menu')

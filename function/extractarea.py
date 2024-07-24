@@ -46,7 +46,7 @@ def main():
     with col3:
         # Manipulate cropped image at will
         st.write("Preview")
-        _ = cropped_img.thumbnail((150, 150))
+        _ = cropped_img.thumbnail((1200, 1200))
         st.image(cropped_img, width=250)
 
     with col1:  

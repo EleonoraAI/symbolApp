@@ -106,7 +106,7 @@ def main(img):
                     st.markdown("**Median**: Median Filtering removes salt-and-pepper noise while preserving edges. This helps the neural network by reducing noise and keeping important edge information intact.")
 
             # Visualizza l'immagine con Streamlit
-            st.image(filtered_img, channels="GRAY" if len(filtered_img.shape) < 3 else "BGR", width=500)
+            st.image(filtered_img, channels="GRAY" if len(filtered_img.shape) < 3 else "BGR", width=1500)
 
     with col1:
         if st.button("Select filter"):
