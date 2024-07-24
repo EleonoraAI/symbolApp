@@ -211,10 +211,10 @@ def main():
         st.write("Colors found in symbols")
         grouped_colors = group_colors_by_range(colors_in_symbols, range_val=25)
         total_colors = sum(grouped_colors.values())
-        top_10_colors = sorted(grouped_colors.items(), key=lambda x: x[1], reverse=True)
+        top_10_colors = sorted(grouped_colors.items(), key=lambda x: x[1], reverse=True)[:10]
 
         st.markdown("### Colors Found in Symbols")
-        with st.expander("Show colors found in symbols"):
+        with st.expander("Show top 10 colors found in symbols"):
             for color, count in top_10_colors:
                 percentage = (count / total_colors) * 100
                 st.markdown(f'<span style="color: rgb({color[0]}, {color[1]}, {color[2]});">&#9608;</span> {color}: {count} ({percentage:.2f}%)', unsafe_allow_html=True)
