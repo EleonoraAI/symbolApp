@@ -5,11 +5,9 @@ from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
 from sklearn.decomposition import PCA
 from PIL import Image
 import shutil
-import pdb
 import matplotlib.pyplot as plt
 import cv2
 from sklearn.metrics import silhouette_score
-import matplotlib.pyplot as plt
 
 def plot_elbow_method(X, max_clusters, method, progress_bar):
     distortions = []
@@ -23,7 +21,10 @@ def plot_elbow_method(X, max_clusters, method, progress_bar):
             clusterer = AgglomerativeClustering(n_clusters=n_clusters)
 
         cluster_labels = clusterer.fit_predict(X)
-        distortion = clusterer.inertia_
+        if hasattr(clusterer, 'inertia_'):
+            distortion = clusterer.inertia_
+        else:
+            distortion = np.sum(np.min(clusterer.transform(X), axis=1)) / X.shape[0]
         distortions.append(distortion)
         
         progress_bar.progress((n_clusters - 2) / (max_clusters - 1))
@@ -41,8 +42,6 @@ def calculate_silhouette_score(X, labels):
 
 def plot_silhouette_scores(X, max_clusters, method, progress_bar):
     scores = []
-    # st.write(f'Numero massimo di cluster: {max_clusters}')
-    
     for n_clusters in range(2, max_clusters + 1):
         if method == 'K-Means':
             clusterer = KMeans(n_clusters=n_clusters, random_state=42)
@@ -54,7 +53,6 @@ def plot_silhouette_scores(X, max_clusters, method, progress_bar):
         cluster_labels = clusterer.fit_predict(X)
         score = calculate_silhouette_score(X, cluster_labels)
         scores.append(score)
-        # st.write(f'Silhouette Score per {n_clusters} cluster: {score}')
         progress_bar.progress((n_clusters - 2) / (max_clusters - 1))
 
     plt.plot(range(2, max_clusters + 1), scores, marker='o')
@@ -82,47 +80,37 @@ def apply_binarization(image, method, threshold=128):
     return binary_image
 
 def perform_clustering(symbols_folder, num_clusters, clustering_algorithm, binarization_method, is_pca, silscore, elbowscore):
-    # Crea una lista di percorsi delle immagini nella cartella 'symbols'
     image_paths = [os.path.join(symbols_folder, filename) for filename in os.listdir(symbols_folder) if filename.endswith(('.jpg', '.png'))]
 
     st.subheader('Loading...')
     progress_bar_im = st.progress(0)
     
-    # Carica le immagini e converte in array
     images = [Image.open(image_path).convert('RGB').resize((100, 100)) for image_path in image_paths]
 
     col1, col2 = st.columns(2)
     
     with col1:
-        # visualizza le prime 5 immagini
         st.subheader('First 5 images')
         st.image(images[:5], width=50)
 
-    # Applica la binarizzazione alle immagini
     binarized_images = [apply_binarization(np.array(image), binarization_method) for image in images]
     
     with col2:
-        # Visualizza le prime 5 immagini binarizzate
         st.subheader('First 5 binarized images:')
         st.image(binarized_images[:5], width=50)
 
     image_arrays = [np.array(image) for image in binarized_images]
     progress_bar_im.progress(1.0)
 
-    # Flattening degli array delle immagini
     flattened_images = [image.flatten() for image in image_arrays]
 
-    # Scegli l'algoritmo di clustering
     if clustering_algorithm == 'K-Means':
         cluster_model = KMeans(n_clusters=num_clusters, random_state=42)
-    # elif clustering_algorithm == 'DBSCAN':
-    #     cluster_model = DBSCAN(eps=0.8, min_samples=25)  # Modifica eps e min_samples secondo le tue esigenze
     elif clustering_algorithm == 'Agglomerative':
         cluster_model = AgglomerativeClustering(n_clusters=num_clusters)
 
-    # add checkbox for PCA
     if is_pca:
-        st.subheader('Riduzione delle dimensioni utilizzando PCA...')
+        st.subheader('Dimensionality reduction using PCA...')
         progress_bar_pca = st.progress(0)
         num_components = min(len(flattened_images), len(flattened_images[0]))
         pca = PCA(n_components=num_components)
@@ -131,7 +119,6 @@ def perform_clustering(symbols_folder, num_clusters, clustering_algorithm, binar
     else:
         reduced_images = flattened_images
 
-    # pdb.set_trace()
     col1, col2 = st.columns(2)
     with col1:
         if silscore:
@@ -141,20 +128,17 @@ def perform_clustering(symbols_folder, num_clusters, clustering_algorithm, binar
             st.pyplot(fig)
     with col2:
         if elbowscore:
-            st.subheader(' Elbow Method:')
+            st.subheader('Elbow Method:')
             progress_bar_elbow = st.progress(1)
             fig_elbow = plot_elbow_method(reduced_images, num_clusters, clustering_algorithm, progress_bar_elbow)
             st.pyplot(fig_elbow)
     
-    # Add progress bar for clustering fitting
     st.subheader('Clustering...')
     progress_bar_cluster = st.progress(0)
     
-    # Esegui il clustering
     cluster_labels = cluster_model.fit_predict(reduced_images)
-    progress_bar_cluster.progress(1.0)  # Update progress bar to indicate completion of clustering
+    progress_bar_cluster.progress(1.0)
 
-    # Visualizza i cluster individuati
     st.subheader('Clusters:')
     cluster_symbols = {}
     for cluster in set(cluster_labels):
@@ -168,9 +152,6 @@ def perform_clustering(symbols_folder, num_clusters, clustering_algorithm, binar
 
     return cluster_symbols
 
-
-
-# Funzione per salvare la classificazione del cluster
 def save_cluster_classification(symbols_folder, cluster, symbols_list):
     cluster_folder = os.path.join(symbols_folder, f'cluster_{cluster + 1}')
     os.makedirs(cluster_folder, exist_ok=True)
@@ -182,7 +163,6 @@ def save_cluster_classification(symbols_folder, cluster, symbols_list):
         try:
             shutil.copy(symbol_path, destination_path)
 
-            # Salvataggio delle classificazioni in formato JPG
             img = Image.open(destination_path).convert('RGB')
             img.save(os.path.join(cluster_folder, f'{symbol.split(".")[0]}.jpg'))
 
@@ -194,7 +174,6 @@ def save_cluster_classification(symbols_folder, cluster, symbols_list):
 def create_dataset(symbols_folder, num_clusters, clustering_algorithm, binarization_method, is_pca, silscore, elbowscore):
     cluster_symbols = perform_clustering(symbols_folder, num_clusters, clustering_algorithm, binarization_method, is_pca, silscore, elbowscore)
 
-    # Creazione della cartella del dataset
     dataset_folder = os.path.join(os.getcwd(), 'dataset')
     os.makedirs(dataset_folder, exist_ok=True)
 
@@ -202,47 +181,57 @@ def create_dataset(symbols_folder, num_clusters, clustering_algorithm, binarizat
         cluster_folder = os.path.join(dataset_folder, f'cluster_{cluster + 1}')
         os.makedirs(cluster_folder, exist_ok=True)
 
-        # Sposta le immagini del cluster nella rispettiva cartella
         for symbol in cluster_symbols[cluster]:
             symbol_path = os.path.join(symbols_folder, symbol)
             destination_path = os.path.join(cluster_folder, symbol)
             shutil.copy(symbol_path, destination_path)
 
 def main():
-    st.title('Symbol Clustering App')
+    st.title('Symbol clustering')
 
-    # Widget for selecting the symbols folder only with dataset in name of directory
-    # symbols_folder = st.sidebar.selectbox('Select symbols folder', os.listdir('.'), index=8)
     symbols_folder = "symbols"
 
-
-    # Widget for enabling PCA
     is_pca = st.sidebar.checkbox("Dimensionality reduction using PCA")
-
-    # Widget for selecting the number of clusters
     num_clusters = st.sidebar.slider('Select the number of clusters', 2, 100, 5)
-
-    # Widget for selecting the clustering algorithm
     clustering_algorithm = st.sidebar.selectbox('Select the clustering algorithm', ['K-Means', 'Agglomerative'])
 
-    # Checkbox for Silhouette Score
-    silcscore = st.checkbox('Silhouette Score')
+    silcscore = st.sidebar.checkbox('Silhouette Score')
+    elbowscore = st.sidebar.checkbox('Elbow Method')
 
-    # Checkbox for Elbow Method
-    elbowscore = st.checkbox('Elbow Method')
-
-    # Widget for selecting the binarization method, set default to gaussian
     binarization_method = st.sidebar.selectbox('Select the binarization method', ['Global', 'Adaptive', 'Otsu', 'Gaussian', 'Inverse'], index=3)
 
-    # Button widget to perform clustering
-    if st.sidebar.button('Perform Clustering'):
+    st.markdown("""
+
+    This step helps in organizing and grouping similar symbols together, which enhances the quality and efficiency of the training process. Here's how clustering contributes to this process:
+
+    ### 1. Data organization and cleaning:
+    - **Purpose**: Clustering helps in organizing large sets of symbols into meaningful groups.
+    - **Description**: By grouping similar symbols together, clustering helps in identifying and removing outliers or irrelevant data. This ensures that the dataset is clean and representative of the target symbols, which is essential for effective training of the neural network.
+
+    ### 2. Enhanced training efficiency:
+    - **Purpose**: Improve the efficiency of the training process by providing well-organized data.
+    - **Description**: Clustering reduces the complexity of the dataset by grouping similar symbols. This allows the CNN to learn patterns and features more effectively, leading to faster convergence and improved accuracy.
+
+    ### 3. Better feature extraction:
+    - **Purpose**: Facilitate better feature extraction by the neural network.
+    - **Description**: When symbols are clustered based on their visual similarities, it becomes easier for the CNN to extract relevant features. This is because the network can focus on the distinct characteristics of each cluster, enhancing its ability to recognize symbols accurately.
+
+    ### 4. Balanced dataset creation:
+    - **Purpose**: Ensure a balanced representation of different symbol classes in the dataset.
+    - **Description**: Clustering helps in identifying underrepresented or overrepresented classes of symbols. This information can be used to balance the dataset, ensuring that the neural network is trained on a diverse set of symbols, which improves its generalization capabilities.
+
+    ### 5. Improved model generalization:
+    - **Purpose**: Enhance the generalization ability of the neural network.
+    - **Description**: By training on clusters of similar symbols, the CNN can learn to generalize better across different variations of symbols. This is particularly important in real-world applications where symbols may vary in size, shape, or orientation.
+
+    """)
+
+    if st.sidebar.button('Perform clustering'):
         perform_clustering(symbols_folder, num_clusters, clustering_algorithm, binarization_method, is_pca, silcscore, elbowscore)
 
-    # Button widget for "Create Dataset"
-    if st.sidebar.button('Create Dataset'):
+    if st.sidebar.button('Create dataset'):
         create_dataset(symbols_folder, num_clusters, clustering_algorithm, binarization_method, is_pca, silcscore, elbowscore)
         st.success(f'Dataset created successfully.')
-
 
 if __name__ == "__main__":
     main()
