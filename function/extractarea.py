@@ -1,9 +1,10 @@
 import streamlit as st
 from streamlit_cropper import st_cropper
 from PIL import Image
-
-st.set_option('deprecation.showfileUploaderEncoding', False)
-
+try:
+    st.set_option('deprecation.showfileUploaderEncoding', False)
+except:
+    pass
 def main():
     st.header("Area Extraction")
     st.markdown("""
